@@ -8,51 +8,38 @@ A modern, high-performance, event-driven microservices ecosystem designed to han
 
 The system consists of three independent backend components that communicate using both synchronous RPC (Remote Procedure Call) protocols and asynchronous event-driven message networks:
 
-                      ┌────────────────┐
-                      │   ms-courier   │ (Port 8082)
-                      └───────▲────────┘
-                              │
-                    OpenFeign │ (Synchronous)
-                              │
-┌────────────────┐    ┌───────▼────────┐    RabbitMQ    ┌────────────────┐
-│  Client API    ├───►│    ms-order    ├───────────────►│   ms-payment   │ (Port 8083)
-└────────────────┘    └────────────────┘  (Asynchronous)└────────────────┘
-                         (Port 8081)
-
-1. ms-order (Port 8081): Coordinates the order lifecycle. Upon receiving a request, it performs a synchronous handshake with ms-courier to secure an available driver, persists the transaction, and broadcasts an event to RabbitMQ.
-2. ms-courier (Port 8082): Manages courier rosters, operational availability states, and profile attributes.
-3. ms-payment (Port 8083): Asynchronously consumes order creation payloads, logs customer transactions, maps entity relations, and directly calculates and updates courier balance ledgers.
+* **Client API** sends a request directly to **ms-order** (Port 8081).
+* **ms-order** (Port 8081) performs a synchronous REST handshake using **Spring Cloud OpenFeign** with **ms-courier** (Port 8082) to secure an available driver, persists the transaction, and broadcasts an event to **RabbitMQ**.
+* **ms-courier** (Port 8082) manages courier rosters, operational availability states, and profile attributes.
+* **ms-payment** (Port 8083) asynchronously consumes the order creation payloads from **RabbitMQ**, logs customer transactions, maps entity relations, and directly calculates and updates courier balance ledgers.
 
 ---
 
 ## Tech Stack & Ecosystem
 
-* Runtime & Framework: Java 26, Spring Boot 3.x
-* Build System: Gradle (Multi-Project Build Layout)
-* Inter-Service Communication: 
+* **Runtime & Framework**: Java 26, Spring Boot 3.x
+* **Build System**: Gradle (Multi-Project Build Layout)
+* **Inter-Service Communication**: 
   * Synchronous: Spring Cloud OpenFeign
   * Asynchronous: RabbitMQ (AMQP Broker)
-* Database & Migration Engine: PostgreSQL with Liquibase database evolution scripting
-* Containerization: Docker & Docker Compose
+* **Database & Migration Engine**: PostgreSQL with Liquibase database evolution scripting
+* **Containerization**: Docker & Docker Compose
 
 ---
 
 ## Repository Structure
 
-delivery-ecosystem/          <-- Common Monorepo Folder
-│
-├── README.md                <-- Project Documentation Homepage
-├── .gitignore               <-- Global Workspace Ignore Rules
-├── docker-compose.yaml      <-- Infrastructure Provisioning Engine
-├── settings.gradle          <-- Multi-Project Module Registration
-├── build.gradle             <-- Root Gradle Script
-│
-├── init-scripts/            <-- Database Automatic Seeding Engine
-│   └── init.sql
-│
-├── ms-order/                <-- Order Microservice (Gradle Sub-Project)
-├── ms-courier/              <-- Courier Microservice (Gradle Sub-Project)
-└── ms-payment/              <-- Payment Microservice (Gradle Sub-Project)
+* **delivery-ecosystem/** (Common Monorepo Folder)
+  * **README.md** (Project Documentation Homepage)
+  * **.gitignore** (Global Workspace Ignore Rules)
+  * **docker-compose.yaml** (Infrastructure Provisioning Engine)
+  * **settings.gradle** (Multi-Project Module Registration)
+  * **build.gradle** (Root Gradle Script)
+  * **init-scripts/** (Database Automatic Seeding Engine)
+    * **init.sql**
+  * **ms-order/** (Order Microservice Gradle Sub-Project)
+  * **ms-courier/** (Courier Microservice Gradle Sub-Project)
+  * **ms-payment/** (Payment Microservice Gradle Sub-Project)
 
 ---
 
@@ -74,7 +61,7 @@ Because this is configured as a Gradle multi-project workspace, you can compile 
 
 ./gradlew build -x test
 
-Next, boot up each application in your IDE (IntelliJ Services Dashboard makes running them side-by-side effortless) or use your terminal inside their respective sub-directories:
+Next, boot up each application in your IDE or use your terminal inside their respective sub-directories:
 * CourierApplication (Port 8082)
 * OrderApplication (Port 8081)
 * PaymentApplication (Port 8083)
