@@ -1,0 +1,4 @@
+rootProject.name = 'delivery-ecosystem'
+include 'ms-order'
+include 'ms-courier'
+include 'ms-payment'

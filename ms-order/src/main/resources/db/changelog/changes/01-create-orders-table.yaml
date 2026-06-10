@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: ali
+      changes:
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+              - column:
+                  name: status
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: courier_id
+                  type: bigint
+  - changeSet:
+      id: add-price-to-orders
+      author: ali
+      changes:
+        - addColumn:
+            tableName: orders
+            columns:
+              - column:
+                  name: price
+                  type: numeric(10,2)
+                  constraints:
+                    nullable: true

@@ -1,0 +1,2 @@
+CREATE DATABASE courier_db;
+CREATE DATABASE payment_db;
